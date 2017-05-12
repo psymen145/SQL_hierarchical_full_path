@@ -1,0 +1,32 @@
+create table file_(
+	id int,
+	parentid int,
+	name nvarchar(max),
+	size int,
+	typ nchar(1)
+)
+
+insert into file_ values (1,null,'ProgramFiles',1000,'d')
+insert into file_ values(2,1,'Anaconda',300,'d')
+insert into file_ values(3,1,'ATI',200,'d')
+insert into file_ values(4,1,'autoexec.cfg',10,'f')
+insert into file_ values(5,2,'Anacondaexec',100,'f')
+insert into file_ values(6,3,'ATIexec',100,'f')
+insert into file_ values(7,2,'AnacondaLib',400,'d')
+insert into file_ values(8,7,'ana.exe',100,'f')
+
+with temptable (fileid, name,parentid,fullpath,filetype) as (
+	select id, name, parentid, cast('' as nvarchar(max)), typ
+	from file_ as first
+	where parentid is null
+	union all
+	select nextgen.id, nextgen.name, parent.parentid, 
+	cast(case when parent.fullpath = ''
+		then(cast(parent.name + '\' + nextgen.name as nvarchar(max)))
+		else(cast(parent.fullpath + '\' + nextgen.name as nvarchar(max)))
+		end as nvarchar(max)),
+	nextgen.typ
+	from file_ as nextgen
+	inner join temptable as parent on nextgen.parentid = parent.fileid
+)
+select fileid, name, fullpath, filetype from temptable where filetype = 'f';
