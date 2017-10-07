@@ -1,1 +1,1 @@
-# SQL_hierarchical_full_path
+Assignment to create a hierarchical query. The new SQL Server data type called "hierarchyid" is not used.
